@@ -31,14 +31,20 @@ const NewIssuePage = () => {
   // provides the register function
   // using register to register the inputfields with react hook form, so it can keep track of them
   // formState object represents everything we need to know about our form
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IssueForm>({
+  const { register, control, handleSubmit,formState: { errors },} = useForm<IssueForm>({
     // pass configuration object here:
     resolver: zodResolver(createIssueSchema),
+  });
+
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setIsSubmitting(true)
+      await axios.post("/api/issues", data);
+      router.push("/issues");
+    } catch (error) {
+      setIsSubmitting(false)
+      setError("An unknown error occured.");
+    }
   });
 
   return (
@@ -53,20 +59,9 @@ const NewIssuePage = () => {
       )}
       <form
         className="space-y-3"
-        onSubmit={handleSubmit(async (data) => {
-          try {
-            setIsSubmitting(true)
-            await axios.post("/api/issues", data);
-            router.push("/issues");
-          } catch (error) {
-            setIsSubmitting(false)
-            setError("An unknown error occured.");
-          }
-        })}
-      >
+        onSubmit={onSubmit}>
         NewIssuePage
         <TextField.Root>
-          {" "}
           {/*use the spread op so that we get access to all the properties the function comes with */}
           <TextField.Input placeholder="Title" {...register("title")} />
         </TextField.Root>
@@ -77,7 +72,7 @@ const NewIssuePage = () => {
           render={({ field }) => (
             <SimpleMDE placeholder="Description" {...field} />
           )}
-        />{" "}
+        />
         {/* above way not supported for SimpleMDE, have to use the controller component in react-hook-form */}
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
