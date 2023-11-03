@@ -9,6 +9,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createIssueSchema } from "@/app/validationSchemas";
 import { z } from "zod";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 // define the shape of our form - what fiels they have and their types
 // interface IssueForm {
@@ -65,11 +66,7 @@ const NewIssuePage = () => {
           {/*use the spread op so that we get access to all the properties the function comes with */}
           <TextField.Input placeholder="Title" {...register("title")} />
         </TextField.Root>
-        {errors.title && (
-          <Text color="red" as="p">
-            {errors.title.message}
-          </Text>
-        )}
+        <ErrorMessage>{errors.title?.message}</ErrorMessage>
         <Controller
           name="description"
           control={control}
@@ -78,11 +75,7 @@ const NewIssuePage = () => {
           )}
         />{" "}
         {/* above way not supported for SimpleMDE, have to use the controller component in react-hook-form */}
-        {errors.description && (
-          <Text color="red" as="p">
-            {errors.description.message}
-          </Text>
-        )}
+        <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button>Submit new issue</Button>
       </form>
     </div>
