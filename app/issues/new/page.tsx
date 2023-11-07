@@ -60,7 +60,6 @@ const NewIssuePage = () => {
       <form
         className="space-y-3"
         onSubmit={onSubmit}>
-        NewIssuePage
         <TextField.Root>
           {/*use the spread op so that we get access to all the properties the function comes with */}
           <TextField.Input placeholder="Title" {...register("title")} />
