@@ -1,6 +1,6 @@
 "use client";
 import { ErrorMessage, Spinner } from "@/app/components";
-import { createIssueSchema } from "@/app/validationSchemas";
+import { issueSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Issue } from "@prisma/client";
 import { Button, Callout, TextField } from "@radix-ui/themes";
@@ -12,13 +12,12 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-// render dynamically and not on server, 
+// render dynamically and not on server,
 // since the simplemde involves client interaction and access to the navigator API
 // it will cause an error when next tries to initially render is on the server
-const SimpleMDE = dynamic(
-  () => import('react-simplemde-editor'), 
-  { ssr: false }
-);
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 // define the shape of our form - what fiels they have and their types
 // interface IssueForm {
@@ -28,7 +27,7 @@ const SimpleMDE = dynamic(
 
 // though a bit redundant as also being defined in the zod createIssueSchema
 // alternatively, it can be generated based on the schema and stored in a type object:
-type IssueFormData = z.infer<typeof createIssueSchema>;
+type IssueFormData = z.infer<typeof issueSchema>;
 
 const IssueForm = ({ issue }: { issue?: Issue }) => {
   const [error, setError] = useState("");
@@ -39,18 +38,24 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   // provides the register function
   // using register to register the inputfields with react hook form, so it can keep track of them
   // formState object represents everything we need to know about our form
-  const { register, control, handleSubmit,formState: { errors },} = useForm<IssueFormData>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IssueFormData>({
     // pass configuration object here:
-    resolver: zodResolver(createIssueSchema),
+    resolver: zodResolver(issueSchema),
   });
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      setIsSubmitting(true)
-      await axios.post("/api/issues", data);
+      setIsSubmitting(true);
+      if (issue) await axios.patch(`/api/issues/${issue.id}`, data);
+      else await axios.post("/api/issues", data);
       router.push("/issues");
     } catch (error) {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
       setError("An unknown error occured.");
     }
   });
@@ -65,12 +70,14 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <form
-        className="space-y-3"
-        onSubmit={onSubmit}>
+      <form className="space-y-3" onSubmit={onSubmit}>
         <TextField.Root>
           {/*use the spread op so that we get access to all the properties the function comes with */}
-          <TextField.Input defaultValue={issue?.title} placeholder="Title" {...register("title")} />
+          <TextField.Input
+            defaultValue={issue?.title}
+            placeholder="Title"
+            {...register("title")}
+          />
         </TextField.Root>
         <ErrorMessage>{errors.title?.message}</ErrorMessage>
         <Controller
@@ -84,7 +91,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         {/* above way not supported for SimpleMDE, have to use the controller component in react-hook-form */}
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
-          Submit new issue 
+          {issue ? "Update issue" : "Submit new issue"}{" "}
           {isSubmitting && <Spinner />}
         </Button>
       </form>
