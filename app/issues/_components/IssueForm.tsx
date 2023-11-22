@@ -6,25 +6,17 @@ import { Issue } from "@prisma/client";
 import { Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
-import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import SimpleMDE from "react-simplemde-editor";
 import { z } from "zod";
-
-// render dynamically and not on server,
-// since the simplemde involves client interaction and access to the navigator API
-// it will cause an error when next tries to initially render is on the server
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
 
 // define the shape of our form - what fiels they have and their types
 // interface IssueForm {
 //     title: string,
 //     description: string
 // }
-
 // though a bit redundant as also being defined in the zod createIssueSchema
 // alternatively, it can be generated based on the schema and stored in a type object:
 type IssueFormData = z.infer<typeof issueSchema>;
