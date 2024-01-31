@@ -5,7 +5,6 @@ import { User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState, useEffect } from "react";
 import Skeleton from "@/app/components/Skeleton";
 
 const AssigneeSelect = () => {
