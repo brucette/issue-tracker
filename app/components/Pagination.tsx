@@ -17,18 +17,15 @@ interface Props {
 
 const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
   const searchParams = useSearchParams();
-  console.log({ searchParams })
   const router = useRouter();
 
   const pageCount = Math.ceil(itemCount / pageSize);
   if (pageCount <= 0) return null;
 
-  const changePage = ( page: number) => {
-
+  const changePage = (page: number) => {
     const params = new URLSearchParams(searchParams);
-    params.set('page', page.toString())
-    router.push('?' + params.toString())
-
+    params.set("page", page.toString());
+    router.push("?" + params.toString());
   };
 
   return (
@@ -43,15 +40,17 @@ const Pagination = ({ currentPage, itemCount, pageSize }: Props) => {
         onClick={() => changePage(1)}>
         <DoubleArrowLeftIcon />
       </Button>
-      <Button 
-        color="gray" 
+      
+      <Button
+        color="gray"
         variant="soft"
         disabled={currentPage === 1}
         onClick={() => changePage(currentPage - 1)}>
         <ChevronLeftIcon />
       </Button>
-      <Button 
-        color="gray" 
+
+      <Button
+        color="gray"
         variant="soft"
         disabled={currentPage === pageCount}
         onClick={() => changePage(currentPage + 1)}>
